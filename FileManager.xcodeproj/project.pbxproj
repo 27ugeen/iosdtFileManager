@@ -14,6 +14,10 @@
 		11AF8E9327E398C800BD115D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11AF8E9227E398C800BD115D /* Assets.xcassets */; };
 		11AF8E9627E398C800BD115D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11AF8E9427E398C800BD115D /* LaunchScreen.storyboard */; };
 		11AF8EA327E4DC9000BD115D /* DocsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF8EA227E4DC9000BD115D /* DocsViewModel.swift */; };
+		11BF0A1627E7A1950036DE6D /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A1527E7A1950036DE6D /* LoginViewController.swift */; };
+		11BF0A1927E7A21F0036DE6D /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A1827E7A21F0036DE6D /* LoginViewModel.swift */; };
+		11BF0A1B27E7A3030036DE6D /* MagicButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A1A27E7A3030036DE6D /* MagicButton.swift */; };
+		11BF0A1F27E7A3C30036DE6D /* Utilits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A1E27E7A3C30036DE6D /* Utilits.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +30,10 @@
 		11AF8E9527E398C800BD115D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		11AF8E9727E398C800BD115D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		11AF8EA227E4DC9000BD115D /* DocsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocsViewModel.swift; sourceTree = "<group>"; };
+		11BF0A1527E7A1950036DE6D /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		11BF0A1827E7A21F0036DE6D /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		11BF0A1A27E7A3030036DE6D /* MagicButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MagicButton.swift; sourceTree = "<group>"; };
+		11BF0A1E27E7A3C30036DE6D /* Utilits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilits.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,7 +67,10 @@
 			isa = PBXGroup;
 			children = (
 				11AF8E8927E398C600BD115D /* AppDelegate.swift */,
+				11BF0A1C27E7A30E0036DE6D /* Components */,
 				11AF8E9D27E46EF100BD115D /* Docs */,
+				11BF0A1727E7A1A00036DE6D /* Login */,
+				11BF0A1D27E7A3AF0036DE6D /* Utilits */,
 				11AF8E8F27E398C600BD115D /* Main.storyboard */,
 				11AF8E9227E398C800BD115D /* Assets.xcassets */,
 				11AF8E9427E398C800BD115D /* LaunchScreen.storyboard */,
@@ -76,6 +87,31 @@
 				11AF8EA227E4DC9000BD115D /* DocsViewModel.swift */,
 			);
 			path = Docs;
+			sourceTree = "<group>";
+		};
+		11BF0A1727E7A1A00036DE6D /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				11BF0A1527E7A1950036DE6D /* LoginViewController.swift */,
+				11BF0A1827E7A21F0036DE6D /* LoginViewModel.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		11BF0A1C27E7A30E0036DE6D /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				11BF0A1A27E7A3030036DE6D /* MagicButton.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		11BF0A1D27E7A3AF0036DE6D /* Utilits */ = {
+			isa = PBXGroup;
+			children = (
+				11BF0A1E27E7A3C30036DE6D /* Utilits.swift */,
+			);
+			path = Utilits;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,9 +185,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11BF0A1B27E7A3030036DE6D /* MagicButton.swift in Sources */,
 				117154CF27E5D94000287D31 /* DocsCollectionViewCell.swift in Sources */,
 				11AF8E8E27E398C600BD115D /* DocsViewController.swift in Sources */,
+				11BF0A1927E7A21F0036DE6D /* LoginViewModel.swift in Sources */,
 				11AF8E8A27E398C600BD115D /* AppDelegate.swift in Sources */,
+				11BF0A1627E7A1950036DE6D /* LoginViewController.swift in Sources */,
+				11BF0A1F27E7A3C30036DE6D /* Utilits.swift in Sources */,
 				11AF8EA327E4DC9000BD115D /* DocsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

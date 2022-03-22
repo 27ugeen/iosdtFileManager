@@ -11,7 +11,7 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
     
     let loginViewModel: LoginViewModel
     
-    var currentStrategy: AuthorizationStrategy = .loggedIn
+    var currentStrategy: AuthorizationStrategy = .passwordExists
     
     var isSignUp: Bool = true {
         willSet {
@@ -82,25 +82,8 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-//        loginViewModel.createListener { auth, user in
-//            if user != nil {
-//                let profileVC = ProfileViewController(userService: CurrentUserService(), userName: (auth.currentUser?.email)!, loginViewModel: self.loginViewModel)
-//                if !profileVC.isViewLoaded {
-//                    self.navigationController?.pushViewController(profileVC, animated: true)
-//                }
-//                print("User is signed in")
-//                print("Current user: \(String(describing: user?.email))")
-//            } else {
-//                print("No user is signed in.")
-//            }
-//        }
-        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-//        loginViewModel.removeListener()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -118,9 +101,9 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
     
     func goToProfile() {
         if !isSignUp {
-            currentStrategy = .newUser
+            currentStrategy = .paswordCreate
         } else {
-            currentStrategy = .loggedIn
+            currentStrategy = .passwordExists
         }
         
         if(!(passwordTextField.text ?? "").isEmpty) {
@@ -129,28 +112,76 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
             showAlert(message: "Please fill the password field!")
         }
     }
+}
+
+extension LogInViewController {
+    func createTabBarController() -> UITabBarController {
+        let tabBC = UITabBarController()
+        let docsVC = DocsViewController(docsViewModel: DocsViewModel().self)
+        let docsNavVC = UINavigationController(rootViewController: docsVC)
+        docsNavVC.tabBarItem = UITabBarItem(title: docsVC.title, image: UIImage(systemName: "folder"), tag: 0)
+        
+        let settingsVC = SettingsViewController()
+        let settingsNavVC = UINavigationController(rootViewController: settingsVC)
+        settingsNavVC.tabBarItem = UITabBarItem(title: settingsVC.title, image: UIImage(systemName: "person"), tag: 1)
+        
+        tabBC.viewControllers = [settingsNavVC, docsNavVC]
+        
+        return tabBC
+    }
     
     func userTryAuthorize(withStrategy: AuthorizationStrategy) {
-        switch currentStrategy {
-        case .loggedIn:
-            loginViewModel.signInUser(userPassword: passwordTextField.text ?? "") { error in
-                if let unwrappedError = error {
-                    print("error is: \(String(describing: unwrappedError.localizedDescription))")
-                    self.showAlert(message: String(describing: unwrappedError.localizedDescription))
-//                    return
-                }
-            }
-            let docsVC = DocsViewController(docsViewModel: DocsViewModel().self)
-            self.navigationController?.pushViewController(docsVC, animated: true)
-        case .newUser:
-            loginViewModel.createUser(userPassword: passwordTextField.text ?? "") { error in
-                if let unwrappedError = error {
-                    print("error is: \(String(describing: unwrappedError.localizedDescription))")
-                    self.showAlert(message: String(describing: unwrappedError.localizedDescription))
-                }
-            }
-        }
-    }
+        let isPasswordEqualToTheEntered = loginViewModel.checkPasswordsAreEqual(userPassword: passwordTextField.text ?? "")
+       
+       switch currentStrategy {
+       case .passwordExists:
+           
+               if isPasswordEqualToTheEntered {
+                   let tabBarController = self.createTabBarController()
+                   self.navigationController?.pushViewController(tabBarController, animated: true)
+                   print("Correct! Now you is logged in!")
+               } else {
+                   showAlert(message: "Entered password is not correct! Try again!")
+                   passwordTextField.text = ""
+                   return
+               }
+       case .paswordCreate:
+           
+           switch loginButton.tag {
+           case 1:
+               if (passwordTextField.text ?? "").count > 3 {
+                   loginViewModel.createPassword(userPassword: passwordTextField.text ?? "") { error in
+                       if let unwrappedError = error {
+                           self.showAlert(message: String(describing: unwrappedError.localizedDescription))
+                           return
+                       }
+                   }
+                   passwordTextField.text = ""
+                   loginButton.tag = 2
+                   loginButton.setTitle("Repeat password", for: .normal)
+               } else {
+                   showAlert(message: "Password must be at least 4 characters!")
+                   passwordTextField.text = ""
+                   return
+               }
+           case 2:
+               if isPasswordEqualToTheEntered {
+                   let tabBarController = self.createTabBarController()
+                   self.navigationController?.pushViewController(tabBarController, animated: true)
+                   print("Correct! Now you is logged in!")
+                   self.dismiss(animated: true)
+               } else {
+                   showAlert(message: "Passwords don't match!")
+                   passwordTextField.text = ""
+                   loginButton.tag = 1
+                   loginButton.setTitle("Create password", for: .normal)
+                   return
+               }
+           default:
+               return
+           }
+       }
+   }
 }
 
 extension LogInViewController {
@@ -164,6 +195,7 @@ extension LogInViewController {
         loginButton.setBackgroundImage(trasparentImage, for: .disabled)
         loginButton.layer.cornerRadius = 10
         loginButton.clipsToBounds = true
+        loginButton.tag = 1
         
         switchLoginButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
     }
@@ -171,6 +203,7 @@ extension LogInViewController {
 
 extension LogInViewController {
     func setupViews() {
+        
         view.backgroundColor = .white
         
         view.addSubview(scrollView)
@@ -214,16 +247,14 @@ extension LogInViewController {
 }
 
 private extension LogInViewController {
-    @objc
-    func keyboardWillShow(notification: NSNotification) {
+    @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             scrollView.contentInset.bottom = keyboardSize.height
             scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
         }
     }
     
-    @objc
-    func keyboardWillHide(notification: NSNotification) {
+    @objc func keyboardWillHide(notification: NSNotification) {
         scrollView.contentInset.bottom = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }

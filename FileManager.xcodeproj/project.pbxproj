@@ -18,6 +18,10 @@
 		11BF0A1927E7A21F0036DE6D /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A1827E7A21F0036DE6D /* LoginViewModel.swift */; };
 		11BF0A1B27E7A3030036DE6D /* MagicButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A1A27E7A3030036DE6D /* MagicButton.swift */; };
 		11BF0A1F27E7A3C30036DE6D /* Utilits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A1E27E7A3C30036DE6D /* Utilits.swift */; };
+		11BF0A2127E7B5E80036DE6D /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A2027E7B5E80036DE6D /* SettingsViewController.swift */; };
+		11BF0A2527E86E5C0036DE6D /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 11BF0A2427E86E5C0036DE6D /* KeychainAccess */; };
+		11BF0A2727E8E5180036DE6D /* SortingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A2627E8E5180036DE6D /* SortingTableViewCell.swift */; };
+		11BF0A2927E8EFF10036DE6D /* PasswordChangeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A2827E8EFF10036DE6D /* PasswordChangeTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +38,9 @@
 		11BF0A1827E7A21F0036DE6D /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		11BF0A1A27E7A3030036DE6D /* MagicButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MagicButton.swift; sourceTree = "<group>"; };
 		11BF0A1E27E7A3C30036DE6D /* Utilits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilits.swift; sourceTree = "<group>"; };
+		11BF0A2027E7B5E80036DE6D /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		11BF0A2627E8E5180036DE6D /* SortingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingTableViewCell.swift; sourceTree = "<group>"; };
+		11BF0A2827E8EFF10036DE6D /* PasswordChangeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11BF0A2527E86E5C0036DE6D /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +79,7 @@
 				11AF8E9D27E46EF100BD115D /* Docs */,
 				11BF0A1727E7A1A00036DE6D /* Login */,
 				11BF0A1D27E7A3AF0036DE6D /* Utilits */,
+				11BF0A2227E7B5EE0036DE6D /* Settings */,
 				11AF8E8F27E398C600BD115D /* Main.storyboard */,
 				11AF8E9227E398C800BD115D /* Assets.xcassets */,
 				11AF8E9427E398C800BD115D /* LaunchScreen.storyboard */,
@@ -114,6 +123,16 @@
 			path = Utilits;
 			sourceTree = "<group>";
 		};
+		11BF0A2227E7B5EE0036DE6D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				11BF0A2027E7B5E80036DE6D /* SettingsViewController.swift */,
+				11BF0A2627E8E5180036DE6D /* SortingTableViewCell.swift */,
+				11BF0A2827E8EFF10036DE6D /* PasswordChangeTableViewCell.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -130,6 +149,9 @@
 			dependencies = (
 			);
 			name = FileManager;
+			packageProductDependencies = (
+				11BF0A2427E86E5C0036DE6D /* KeychainAccess */,
+			);
 			productName = FileManager;
 			productReference = 11AF8E8627E398C600BD115D /* FileManager.app */;
 			productType = "com.apple.product-type.application";
@@ -158,6 +180,9 @@
 				Base,
 			);
 			mainGroup = 11AF8E7D27E398C600BD115D;
+			packageReferences = (
+				11BF0A2327E86E5C0036DE6D /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+			);
 			productRefGroup = 11AF8E8727E398C600BD115D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -189,10 +214,13 @@
 				117154CF27E5D94000287D31 /* DocsCollectionViewCell.swift in Sources */,
 				11AF8E8E27E398C600BD115D /* DocsViewController.swift in Sources */,
 				11BF0A1927E7A21F0036DE6D /* LoginViewModel.swift in Sources */,
+				11BF0A2927E8EFF10036DE6D /* PasswordChangeTableViewCell.swift in Sources */,
 				11AF8E8A27E398C600BD115D /* AppDelegate.swift in Sources */,
 				11BF0A1627E7A1950036DE6D /* LoginViewController.swift in Sources */,
 				11BF0A1F27E7A3C30036DE6D /* Utilits.swift in Sources */,
 				11AF8EA327E4DC9000BD115D /* DocsViewModel.swift in Sources */,
+				11BF0A2727E8E5180036DE6D /* SortingTableViewCell.swift in Sources */,
+				11BF0A2127E7B5E80036DE6D /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +438,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		11BF0A2327E86E5C0036DE6D /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		11BF0A2427E86E5C0036DE6D /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 11BF0A2327E86E5C0036DE6D /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 11AF8E7E27E398C600BD115D /* Project object */;
 }

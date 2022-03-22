@@ -12,13 +12,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
-    let docsViewModel = DocsViewModel()
     let loginViewModel = LoginViewModel()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-//        let navigationController = UINavigationController(rootViewController: DocsViewController(docsViewModel: docsViewModel))
         let navigationController = UINavigationController(rootViewController: LogInViewController(loginViewModel: loginViewModel))
+        navigationController.isNavigationBarHidden = true
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = navigationController

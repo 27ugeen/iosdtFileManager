@@ -7,10 +7,11 @@
 
 import Foundation
 import UIKit
+import KeychainAccess
 
 enum AuthorizationStrategy {
-    case loggedIn
-    case newUser
+    case passwordExists
+    case paswordCreate
 }
 
 protocol LoginViewInputProtocol: AnyObject {
@@ -18,60 +19,77 @@ protocol LoginViewInputProtocol: AnyObject {
 }
 
 protocol LoginViewOutputProtocol: AnyObject {
-    func signInUser(userPassword: String, completition: @escaping (Error?) -> Void)
-    func createUser(userPassword: String, completition: @escaping (Error?) -> Void)
-    func logOutUser(completition: @escaping (Error?) -> Void)
+    func createPassword(userPassword: String, completition: @escaping (Error?) -> Void)
+    func checkPasswordsAreEqual(userPassword: String) -> Bool
+//    func logOutUser(completition: @escaping (Error?) -> Void)
 }
 
 final class LoginViewModel: LoginViewOutputProtocol {
     
     weak var view: LoginViewInputProtocol?
     
-//    var handle: AuthStateDidChangeListenerHandle?
+    private let keychain = Keychain(service: "com.gin.FileManager")
+    private let keychainKey = "GinPassword"
+    private var enteredPassword: String?
     
-    func createUser(userPassword: String, completition: @escaping (Error?) -> Void) {
-//        Auth.auth().createUser(withEmail: userLogin, password: userPassword) { authResult, error in
-//            if let result = authResult {
-//                print("Result: \(result)")
-//                print("Create result: \(String(describing: result.user.email))")
-//                let ref = Database.database(url: "https://ginnavigation-default-rtdb.europe-west1.firebasedatabase.app").reference().child("users")
-//                ref.child(result.user.uid).updateChildValues(["name" : result.user.email!])
-//            } else if let error = error as NSError? {
-//                completition(error)
-//                return
-//            }
-//        }
+    func createPassword(userPassword: String, completition: @escaping (Error?) -> Void) {
+        do {
+            try keychain.set(userPassword, key: keychainKey)
+            print("New password has saved!")
+        } catch let error {
+            completition(error)
+            print(error)
+        }
     }
     
-    func signInUser(userPassword: String, completition: @escaping (Error?) -> Void) {
-//        Auth.auth().signIn(withEmail: userLogin, password: userPassword) { authResult, error in
-//            if let result = authResult {
-//                print("Result: \(result)")
-//                print("Sign in result: \(String(describing: result.user.email))")
-//            } else if let error = error as NSError? {
-//                completition(error)
-//                return
-//            }
-//        }
+    private func getPassword() -> String {
+        let keychain = Keychain()
+        var password: String?
+        do {
+            password = try keychain.get("GinPassword")
+        } catch let error {
+            print("error: \(error)")
+        }
+        return password ?? ""
     }
     
-    func logOutUser(completition: @escaping (Error?) -> Void) {
+    func checkPasswordsAreEqual(userPassword: String) -> Bool {
+        
+        enteredPassword = getPassword()
+        
+        guard userPassword == enteredPassword  else {
+            return false
+        }
+        return true
+    }
+    
+//    func changePassword(newPassword: String, completition: @escaping (Error?) -> Void) {
 //        do {
-//            try Auth.auth().signOut()
-//            completition(nil)
-//        }
-//        catch let error as NSError {
+//            try keychain.set(newPassword, key: keychainKey)
+//            print("Password has been changed!")
+//        } catch let error {
 //            completition(error)
-//        }
-    }
-    
-//    func createListener(completition: @escaping (FirebaseAuth.Auth, FirebaseAuth.User?) -> Void) {
-//        handle = Auth.auth().addStateDidChangeListener { auth, user in
-//                completition(auth, user)
+//            print(error)
 //        }
 //    }
     
+    func logOutUser(completition: @escaping (Error?) -> Void) {
+        //        do {
+        //            try Auth.auth().signOut()
+        //            completition(nil)
+        //        }
+        //        catch let error as NSError {
+        //            completition(error)
+        //        }
+    }
+    
+    //    func createListener(completition: @escaping (FirebaseAuth.Auth, FirebaseAuth.User?) -> Void) {
+    //        handle = Auth.auth().addStateDidChangeListener { auth, user in
+    //                completition(auth, user)
+    //        }
+    //    }
+    
     func removeListener() {
-//        Auth.auth().removeStateDidChangeListener(handle!)
+        //        Auth.auth().removeStateDidChangeListener(handle!)
     }
 }

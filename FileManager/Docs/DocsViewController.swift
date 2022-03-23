@@ -26,9 +26,22 @@ class DocsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        docsViewModel.showDocsContent()
+        let isToggleOn = UserDefaults.standard.bool(forKey: "toggle")
+        docsViewModel.showDocsContent(isToggleOn: isToggleOn)
+//        LoginViewModel().logOutUser { error in
+//            print(String(describing: error?.localizedDescription))
+//        }
+        
         setupTableView()
         setupViews()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        let isToggleOn = UserDefaults.standard.bool(forKey: "toggle")
+        docsViewModel.getSortedImages(isToggleOn: isToggleOn)
+        tableView.reloadData()
     }
     
     @objc func addImage() {
@@ -113,14 +126,13 @@ extension DocsViewController {
     }
 }
 
-
-
 extension DocsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let image = info[.originalImage] as? UIImage {
-            docsViewModel.saveImageToDocuments(chosenImage: image)
+            let isToggleOn = UserDefaults.standard.bool(forKey: "toggle")
+            docsViewModel.saveImageToDocuments(chosenImage: image, isToggleOn: isToggleOn)
             tableView.reloadData()
         }
         self.dismiss(animated: true, completion: nil)
@@ -135,11 +147,11 @@ extension DocsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: docsCellID, for: indexPath) as! DocsTableViewCell
         
-        let creationDate = docsViewModel.userImages[indexPath.row].imageCreationDate
+        let creationDate = docsViewModel.sortedImages[indexPath.row].imageCreationDate
         
-        cell.imgView.image = docsViewModel.userImages[indexPath.row].image
+        cell.imgView.image = docsViewModel.sortedImages[indexPath.row].image
         cell.imageCreationDateLabel.text = String.getFormattedDate(date: creationDate)
-        cell.imageSizeLabel.text = "\((docsViewModel.userImages[indexPath.row].imageSize)/1000)KB"
+        cell.imageSizeLabel.text = "\((docsViewModel.sortedImages[indexPath.row].imageSize)/1000)KB"
         return cell
     }
 }

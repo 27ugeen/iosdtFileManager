@@ -10,8 +10,9 @@ import UIKit
 import KeychainAccess
 
 enum AuthorizationStrategy {
-    case passwordExists
+    case passwordEnter
     case paswordCreate
+    case passwordChange
 }
 
 protocol LoginViewInputProtocol: AnyObject {
@@ -31,6 +32,15 @@ final class LoginViewModel: LoginViewOutputProtocol {
     private let keychain = Keychain(service: "com.gin.FileManager")
     private let keychainKey = "GinPassword"
     private var enteredPassword: String?
+    
+    func checkPasswordExists() -> Bool {
+        
+        enteredPassword = getPassword()
+        guard (enteredPassword ?? "").count > 3 else {
+            return false
+        }
+        return true
+    }
     
     func createPassword(userPassword: String, completition: @escaping (Error?) -> Void) {
         do {
@@ -74,22 +84,10 @@ final class LoginViewModel: LoginViewOutputProtocol {
 //    }
     
     func logOutUser(completition: @escaping (Error?) -> Void) {
-        //        do {
-        //            try Auth.auth().signOut()
-        //            completition(nil)
-        //        }
-        //        catch let error as NSError {
-        //            completition(error)
-        //        }
-    }
-    
-    //    func createListener(completition: @escaping (FirebaseAuth.Auth, FirebaseAuth.User?) -> Void) {
-    //        handle = Auth.auth().addStateDidChangeListener { auth, user in
-    //                completition(auth, user)
-    //        }
-    //    }
-    
-    func removeListener() {
-        //        Auth.auth().removeStateDidChangeListener(handle!)
+        do {
+            try keychain.remove("GinPassword")
+        } catch let error {
+            completition(error)
+        }
     }
 }

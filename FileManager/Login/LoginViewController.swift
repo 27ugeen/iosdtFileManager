@@ -11,19 +11,7 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
     
     let loginViewModel: LoginViewModel
     
-    var currentStrategy: AuthorizationStrategy = .passwordExists
-    
-    var isSignUp: Bool = true {
-        willSet {
-            if newValue {
-                loginButton.setTitle("Enter password", for: .normal)
-                switchLoginButton.setTitle("You don't have a password yet? Create", for: .normal)
-            } else {
-                loginButton.setTitle("Create password", for: .normal)
-                switchLoginButton.setTitle("Do you already have a password? Sign In", for: .normal)
-            }
-        }
-    }
+    var currentStrategy: AuthorizationStrategy = .paswordCreate
     
     let scrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -55,12 +43,8 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
         return text
     }()
     
-    lazy var loginButton = MagicButton(title: "Enter password", titleColor: .white) {
+    lazy var loginButton = MagicButton(title: "test", titleColor: .white) {
         self.goToProfile()
-    }
-    
-    lazy var switchLoginButton = MagicButton(title: "You don't have a password yet? Create", titleColor: .systemBlue) {
-        self.isSignUp = !self.isSignUp
     }
     
     init(loginViewModel: LoginViewModel) {
@@ -75,6 +59,7 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        checkPasswordExists()
         setupLoginButton()
         setupViews()
     }
@@ -100,16 +85,25 @@ class LogInViewController: UIViewController, LoginViewInputProtocol {
     }
     
     func goToProfile() {
+        userTryAuthorize(withStrategy: currentStrategy)
+    }
+}
+
+extension LogInViewController {
+    private func checkPasswordExists() {
+        let isSignUp = loginViewModel.checkPasswordExists()
+        
         if !isSignUp {
             currentStrategy = .paswordCreate
+            loginButton.setTitle("Create password", for: .normal)
         } else {
-            currentStrategy = .passwordExists
-        }
-        
-        if(!(passwordTextField.text ?? "").isEmpty) {
-            userTryAuthorize(withStrategy: currentStrategy)
-        } else {
-            showAlert(message: "Please fill the password field!")
+            if loginButton.tag == 3 {
+                currentStrategy = .passwordChange
+                loginButton.setTitle("Change password", for: .normal)
+            } else {
+                currentStrategy = .passwordEnter
+                loginButton.setTitle("Enter password", for: .normal)
+            }
         }
     }
 }
@@ -131,56 +125,94 @@ extension LogInViewController {
     }
     
     func userTryAuthorize(withStrategy: AuthorizationStrategy) {
+        
+        guard !(passwordTextField.text ?? "").isEmpty else {
+            showAlert(message: "Please fill the password field!")
+            return
+        }
+        
         let isPasswordEqualToTheEntered = loginViewModel.checkPasswordsAreEqual(userPassword: passwordTextField.text ?? "")
-       
-       switch currentStrategy {
-       case .passwordExists:
-           
-               if isPasswordEqualToTheEntered {
-                   let tabBarController = self.createTabBarController()
-                   self.navigationController?.pushViewController(tabBarController, animated: true)
-                   print("Correct! Now you is logged in!")
-               } else {
-                   showAlert(message: "Entered password is not correct! Try again!")
-                   passwordTextField.text = ""
-                   return
-               }
-       case .paswordCreate:
-           
-           switch loginButton.tag {
-           case 1:
-               if (passwordTextField.text ?? "").count > 3 {
-                   loginViewModel.createPassword(userPassword: passwordTextField.text ?? "") { error in
-                       if let unwrappedError = error {
-                           self.showAlert(message: String(describing: unwrappedError.localizedDescription))
-                           return
-                       }
-                   }
-                   passwordTextField.text = ""
-                   loginButton.tag = 2
-                   loginButton.setTitle("Repeat password", for: .normal)
-               } else {
-                   showAlert(message: "Password must be at least 4 characters!")
-                   passwordTextField.text = ""
-                   return
-               }
-           case 2:
-               if isPasswordEqualToTheEntered {
-                   let tabBarController = self.createTabBarController()
-                   self.navigationController?.pushViewController(tabBarController, animated: true)
-                   print("Correct! Now you is logged in!")
-                   self.dismiss(animated: true)
-               } else {
-                   showAlert(message: "Passwords don't match!")
-                   passwordTextField.text = ""
-                   loginButton.tag = 1
-                   loginButton.setTitle("Create password", for: .normal)
-                   return
-               }
-           default:
-               return
-           }
-       }
+        
+        switch currentStrategy {
+        case .passwordEnter:
+            if isPasswordEqualToTheEntered {
+                let tabBarController = self.createTabBarController()
+                self.navigationController?.pushViewController(tabBarController, animated: true)
+                print("Correct! Now you is logged in!")
+            } else {
+                showAlert(message: "Entered password is not correct! Try again!")
+                passwordTextField.text = ""
+                return
+            }
+        case .paswordCreate:
+            switch loginButton.tag {
+            case 0:
+                if (passwordTextField.text ?? "").count > 3 {
+                    loginViewModel.createPassword(userPassword: passwordTextField.text ?? "") { error in
+                        if let unwrappedError = error {
+                            self.showAlert(message: String(describing: unwrappedError.localizedDescription))
+                            return
+                        }
+                    }
+                    passwordTextField.text = ""
+                    loginButton.tag = 1
+                    loginButton.setTitle("Repeat password", for: .normal)
+                } else {
+                    showAlert(message: "Password must be at least 4 characters!")
+                    passwordTextField.text = ""
+                    return
+                }
+            case 1:
+                if isPasswordEqualToTheEntered {
+                    let tabBarController = self.createTabBarController()
+                    self.navigationController?.pushViewController(tabBarController, animated: true)
+                    print("Correct! Now you is logged in!")
+                    self.dismiss(animated: true)
+                } else {
+                    showAlert(message: "Passwords don't match!")
+                    passwordTextField.text = ""
+                    loginButton.tag = 0
+                    loginButton.setTitle("Create password", for: .normal)
+                    return
+                }
+            default:
+                return
+            }
+        case .passwordChange:
+            switch loginButton.tag {
+            case 3:
+                if (passwordTextField.text ?? "").count > 3 {
+                    loginViewModel.createPassword(userPassword: passwordTextField.text ?? "") { error in
+                        if let unwrappedError = error {
+                            self.showAlert(message: String(describing: unwrappedError.localizedDescription))
+                            return
+                        }
+                    }
+                    passwordTextField.text = ""
+                    loginButton.tag = 2
+                    loginButton.setTitle("Repeat password", for: .normal)
+                } else {
+                    showAlert(message: "Password must be at least 4 characters!")
+                    passwordTextField.text = ""
+                    return
+                }
+            case 2:
+                if isPasswordEqualToTheEntered {
+                    let tabBarController = self.createTabBarController()
+                    self.navigationController?.pushViewController(tabBarController, animated: true)
+                    print("Correct! Now you is logged in!")
+                    self.dismiss(animated: true)
+                } else {
+                    showAlert(message: "Passwords don't match!")
+                    passwordTextField.text = ""
+                    loginButton.tag = 3
+                    loginButton.setTitle("Change password", for: .normal)
+                    return
+                }
+            default:
+                return
+            }
+        }
    }
 }
 
@@ -195,15 +227,11 @@ extension LogInViewController {
         loginButton.setBackgroundImage(trasparentImage, for: .disabled)
         loginButton.layer.cornerRadius = 10
         loginButton.clipsToBounds = true
-        loginButton.tag = 1
-        
-        switchLoginButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
     }
 }
 
 extension LogInViewController {
     func setupViews() {
-        
         view.backgroundColor = .white
         
         view.addSubview(scrollView)
@@ -211,7 +239,6 @@ extension LogInViewController {
         
         contentView.addSubview(passwordTextField)
         contentView.addSubview(loginButton)
-        contentView.addSubview(switchLoginButton)
         
         let constraints = [
             scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -234,13 +261,8 @@ extension LogInViewController {
             loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 16),
             loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            loginButton.heightAnchor.constraint(equalToConstant: 50),
-            
-            switchLoginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            switchLoginButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 5),
-            switchLoginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            switchLoginButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            switchLoginButton.heightAnchor.constraint(equalToConstant: 20)
+            loginButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            loginButton.heightAnchor.constraint(equalToConstant: 50)
         ]
         NSLayoutConstraint.activate(constraints)
     }

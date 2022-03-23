@@ -22,7 +22,6 @@ class SettingsViewController: UIViewController {
         
         setupTableView()
         setupViews()
-        
     }
 }
 
@@ -80,9 +79,15 @@ extension SettingsViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let loginVC = LogInViewController(loginViewModel: LoginViewModel().self)
-        loginVC.isSignUp = false
-        loginVC.loginButton.setTitle("Change password", for: .normal)
-        self.present(loginVC, animated: true)
+        switch indexPath.row {
+        case 0:
+            return
+        case 1:
+            let loginVC = LogInViewController(loginViewModel: LoginViewModel().self)
+            loginVC.loginButton.tag = 3
+            self.present(loginVC, animated: true)
+        default:
+            return
+        }
     }
 }

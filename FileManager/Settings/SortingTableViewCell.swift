@@ -21,7 +21,7 @@ class SortingTableViewCell: UITableViewCell {
     let toggle: UISwitch = {
         let toggle = UISwitch()
         toggle.translatesAutoresizingMaskIntoConstraints = false
-        toggle.isOn = true
+        toggle.isOn = UserDefaults.standard.bool(forKey: "toggle")
         toggle.onTintColor = .systemGreen
         return toggle
     }()
@@ -34,12 +34,22 @@ class SortingTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    @objc func toggleChanged() {
+        if toggle.isOn {
+            UserDefaults.standard.set(true, forKey: "toggle")
+        } else {
+            UserDefaults.standard.set(false, forKey: "toggle")
+        }
+    }
 }
 
 extension SortingTableViewCell {
     
     private func setupViews() {
+        
+        toggle.addTarget(self, action: #selector(toggleChanged), for: .valueChanged)
+        
         contentView.addSubview(sortingLabel)
         contentView.addSubview(toggle)
         

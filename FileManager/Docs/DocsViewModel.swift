@@ -13,11 +13,18 @@ protocol DocsViewModelOutputProtocol {
     func saveImageToDocuments(chosenImage: UIImage)
 }
 
+struct ImageFile {
+    let image: UIImage
+    let imageName: String
+    let imageSize: Int
+    let imageCreationDate: Date
+}
+
 class DocsViewModel: DocsViewModelOutputProtocol {
     
     var documentsUrl: URL?
     var content: [URL]?
-    var userImages: [UIImage] = []
+    var userImages: [ImageFile] = []
     
     func showDocsContent() {
         do {
@@ -31,12 +38,26 @@ class DocsViewModel: DocsViewModelOutputProtocol {
         }
         
         if let unwrappedContent = content {
-            for file in unwrappedContent {
+            for fileUrl in unwrappedContent {
+                var fileSize: Int?
+                var creationDate: Date?
+                
+                if FileManager.default.fileExists(atPath: fileUrl.path) {
+                    do {
+                        let attributes = try FileManager.default.attributesOfItem(atPath: fileUrl.path)
+                        fileSize = attributes[.size] as? Int
+                        creationDate = attributes[.creationDate] as? Date
+                    } catch let error as NSError {
+                        print("Error is: \(error.localizedDescription)")
+                    }
+                }
                 do {
-                    let imageData = try Data(contentsOf: file)
+                    let imageData = try Data(contentsOf: fileUrl)
                     
                     if let image = UIImage(data: imageData) {
-                        userImages.append(image)
+                        let newImage = ImageFile.init(image: image, imageName: fileUrl.lastPathComponent, imageSize: fileSize ?? 0, imageCreationDate: creationDate ?? Date())
+                        
+                        userImages.append(newImage)
                     }
                 } catch let error as NSError {
                     print("Error is: \(error.localizedDescription)")
@@ -52,7 +73,30 @@ class DocsViewModel: DocsViewModelOutputProtocol {
             let fileUrl = unwrappedDocumentsUrl.appendingPathComponent(String.random())
             FileManager.default.createFile(atPath: fileUrl.path, contents: data, attributes: nil)
             
-            userImages.append(chosenImage)
+            var fileSize: Int?
+            var creationDate: Date?
+            
+            if FileManager.default.fileExists(atPath: fileUrl.path) {
+                do {
+                    let attributes = try FileManager.default.attributesOfItem(atPath: fileUrl.path)
+                    fileSize = attributes[.size] as? Int
+                    creationDate = attributes[.creationDate] as? Date
+                } catch let error as NSError {
+                    print("Error is: \(error.localizedDescription)")
+                }
+            }
+            do {
+                let imageData = try Data(contentsOf: fileUrl)
+                
+                if let image = UIImage(data: imageData) {
+                    let newImage = ImageFile.init(image: image, imageName: fileUrl.lastPathComponent, imageSize: fileSize ?? 0, imageCreationDate: creationDate ?? Date())
+                    
+                    userImages.append(newImage)
+                }
+            } catch let error as NSError {
+                print("Error is: \(error.localizedDescription)")
+            }
+//            userImages.append(chosenImage)
         }
     }
 }

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		117154CF27E5D94000287D31 /* DocsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117154CE27E5D94000287D31 /* DocsCollectionViewCell.swift */; };
 		11AF8E8A27E398C600BD115D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF8E8927E398C600BD115D /* AppDelegate.swift */; };
 		11AF8E8E27E398C600BD115D /* DocsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AF8E8D27E398C600BD115D /* DocsViewController.swift */; };
 		11AF8E9127E398C600BD115D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11AF8E8F27E398C600BD115D /* Main.storyboard */; };
@@ -22,10 +21,10 @@
 		11BF0A2527E86E5C0036DE6D /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 11BF0A2427E86E5C0036DE6D /* KeychainAccess */; };
 		11BF0A2727E8E5180036DE6D /* SortingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A2627E8E5180036DE6D /* SortingTableViewCell.swift */; };
 		11BF0A2927E8EFF10036DE6D /* PasswordChangeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A2827E8EFF10036DE6D /* PasswordChangeTableViewCell.swift */; };
+		11BF0A2B27EA5A9F0036DE6D /* DocsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF0A2A27EA5A9F0036DE6D /* DocsTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		117154CE27E5D94000287D31 /* DocsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocsCollectionViewCell.swift; sourceTree = "<group>"; };
 		11AF8E8627E398C600BD115D /* FileManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FileManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11AF8E8927E398C600BD115D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		11AF8E8D27E398C600BD115D /* DocsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocsViewController.swift; sourceTree = "<group>"; };
@@ -41,6 +40,7 @@
 		11BF0A2027E7B5E80036DE6D /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		11BF0A2627E8E5180036DE6D /* SortingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingTableViewCell.swift; sourceTree = "<group>"; };
 		11BF0A2827E8EFF10036DE6D /* PasswordChangeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeTableViewCell.swift; sourceTree = "<group>"; };
+		11BF0A2A27EA5A9F0036DE6D /* DocsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocsTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,7 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				11AF8E8D27E398C600BD115D /* DocsViewController.swift */,
-				117154CE27E5D94000287D31 /* DocsCollectionViewCell.swift */,
+				11BF0A2A27EA5A9F0036DE6D /* DocsTableViewCell.swift */,
 				11AF8EA227E4DC9000BD115D /* DocsViewModel.swift */,
 			);
 			path = Docs;
@@ -211,7 +211,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				11BF0A1B27E7A3030036DE6D /* MagicButton.swift in Sources */,
-				117154CF27E5D94000287D31 /* DocsCollectionViewCell.swift in Sources */,
 				11AF8E8E27E398C600BD115D /* DocsViewController.swift in Sources */,
 				11BF0A1927E7A21F0036DE6D /* LoginViewModel.swift in Sources */,
 				11BF0A2927E8EFF10036DE6D /* PasswordChangeTableViewCell.swift in Sources */,
@@ -220,6 +219,7 @@
 				11BF0A1F27E7A3C30036DE6D /* Utilits.swift in Sources */,
 				11AF8EA327E4DC9000BD115D /* DocsViewModel.swift in Sources */,
 				11BF0A2727E8E5180036DE6D /* SortingTableViewCell.swift in Sources */,
+				11BF0A2B27EA5A9F0036DE6D /* DocsTableViewCell.swift in Sources */,
 				11BF0A2127E7B5E80036DE6D /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

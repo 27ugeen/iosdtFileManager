@@ -11,20 +11,8 @@ class DocsViewController: UIViewController {
     
     let docsViewModel: DocsViewModel
     
-    let cellID = String(describing: DocsCollectionViewCell.self)
-    
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        
-        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collection.backgroundColor = .white
-        collection.translatesAutoresizingMaskIntoConstraints = false
-        collection.register(DocsCollectionViewCell.self, forCellWithReuseIdentifier: cellID)
-        collection.dataSource = self
-        collection.delegate = self
-        return collection
-    }()
+    let docsCellID = String(describing: DocsTableViewCell.self)
+    let tableView = UITableView(frame: .zero, style: .insetGrouped)
     
     init(docsViewModel: DocsViewModel) {
         self.docsViewModel = docsViewModel
@@ -39,11 +27,24 @@ class DocsViewController: UIViewController {
         super.viewDidLoad()
         
         docsViewModel.showDocsContent()
+        setupTableView()
         setupViews()
     }
     
     @objc func addImage() {
         showImagePickerOption()
+    }
+}
+
+extension DocsViewController {
+    func setupTableView() {
+        
+        view.addSubview(tableView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.register(DocsTableViewCell.self, forCellReuseIdentifier: docsCellID)
+        
+        tableView.dataSource = self
+        tableView.delegate = self
     }
 }
 
@@ -68,7 +69,6 @@ extension DocsViewController {
                 let cameraImagePicker = self.imagePicker(sourceType: .camera)
                 cameraImagePicker.delegate = self
                 self.present(cameraImagePicker, animated: true)
-                //TODO
             } else {
                 let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -84,7 +84,6 @@ extension DocsViewController {
             let libraryImagePicker = self.imagePicker(sourceType: .photoLibrary)
             libraryImagePicker.delegate = self
             self.present(libraryImagePicker, animated: true)
-            //TODO
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -103,18 +102,18 @@ extension DocsViewController {
         self.navigationItem.setRightBarButtonItems([button], animated: true)
         
         view.backgroundColor = .white
-        view.addSubview(collectionView)
         
         let constraints = [
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor)
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ]
         NSLayoutConstraint.activate(constraints)
     }
 }
+
+
 
 extension DocsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -122,47 +121,31 @@ extension DocsViewController: UIImagePickerControllerDelegate, UINavigationContr
         
         if let image = info[.originalImage] as? UIImage {
             docsViewModel.saveImageToDocuments(chosenImage: image)
-            collectionView.reloadData()
+            tableView.reloadData()
         }
         self.dismiss(animated: true, completion: nil)
     }
 }
 
-extension DocsViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return docsViewModel.userImages.count
+extension DocsViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        docsViewModel.userImages.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as! DocsCollectionViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: docsCellID, for: indexPath) as! DocsTableViewCell
         
-        cell.imageView.image = docsViewModel.userImages[indexPath.row]
+        let creationDate = docsViewModel.userImages[indexPath.row].imageCreationDate
+        
+        cell.imgView.image = docsViewModel.userImages[indexPath.row].image
+        cell.imageCreationDateLabel.text = String.getFormattedDate(date: creationDate)
+        cell.imageSizeLabel.text = "\((docsViewModel.userImages[indexPath.row].imageSize)/1000)KB"
         return cell
     }
 }
 
-extension DocsViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let photoWidth = CGFloat(collectionView.frame.width - 4 * 8) / 3
-        return CGSize(width: photoWidth, height: photoWidth)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 8
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 8
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Photo Gallery: item: \(indexPath.item)")
+extension DocsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 88
     }
 }
-
-

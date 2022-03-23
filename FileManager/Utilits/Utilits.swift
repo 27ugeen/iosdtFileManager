@@ -28,4 +28,11 @@ extension String {
         }
         return randomString
     }
+    
+    static func getFormattedDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "nl_NL")
+        formatter.setLocalizedDateFormatFromTemplate("dd-MM-yyyy HH:mm")
+        return formatter.string(from: date)
+    }
 }

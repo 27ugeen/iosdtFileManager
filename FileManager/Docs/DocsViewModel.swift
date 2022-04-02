@@ -102,6 +102,26 @@ class DocsViewModel: DocsViewModelOutputProtocol {
         }
     }
     
+    func deleteImageFromDocuments(removableImage: ImageFile, index: Int) {
+        if let unwrappedDocumentsUrl = documentsUrl {
+            
+            if content != nil {
+                let fileUrl = unwrappedDocumentsUrl.appendingPathComponent(removableImage.imageName)
+                
+                if FileManager.default.fileExists(atPath: fileUrl.path) {
+                    do {
+                        try FileManager.default.removeItem(at: fileUrl)
+                        print("Image \(removableImage.imageName) has been deleted!")
+                    } catch let error as NSError {
+                        print("Error is: \(error.localizedDescription)")
+                    }
+                }
+                sortedImages.remove(at: index)
+                userImages = sortedImages
+            }
+        }
+    }
+    
     func getSortedImages(isToggleOn: Bool) {
         if isToggleOn {
             sortedImages = userImages.sorted {

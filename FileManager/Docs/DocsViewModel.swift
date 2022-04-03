@@ -9,17 +9,25 @@ import Foundation
 import UIKit
 
 protocol DocsViewModelOutputProtocol {
-    func showDocsContent()
-    func saveImageToDocuments(chosenImage: UIImage)
+    func showDocsContent(isToggleOn: Bool)
+    func saveImageToDocuments(chosenImage: UIImage, isToggleOn: Bool)
+}
+
+struct ImageFile {
+    let image: UIImage
+    let imageName: String
+    let imageSize: Int
+    let imageCreationDate: Date
 }
 
 class DocsViewModel: DocsViewModelOutputProtocol {
     
     var documentsUrl: URL?
     var content: [URL]?
-    var userImages: [UIImage] = []
+    var userImages: [ImageFile] = []
+    var sortedImages: [ImageFile] = []
     
-    func showDocsContent() {
+    func showDocsContent(isToggleOn: Bool) {
         do {
             documentsUrl = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
             if let unwrappeddDocumentsUrl = documentsUrl {
@@ -31,12 +39,27 @@ class DocsViewModel: DocsViewModelOutputProtocol {
         }
         
         if let unwrappedContent = content {
-            for file in unwrappedContent {
+            for fileUrl in unwrappedContent {
+                var fileSize: Int?
+                var creationDate: Date?
+                
+                if FileManager.default.fileExists(atPath: fileUrl.path) {
+                    do {
+                        let attributes = try FileManager.default.attributesOfItem(atPath: fileUrl.path)
+                        fileSize = attributes[.size] as? Int
+                        creationDate = attributes[.creationDate] as? Date
+                    } catch let error as NSError {
+                        print("Error is: \(error.localizedDescription)")
+                    }
+                }
                 do {
-                    let imageData = try Data(contentsOf: file)
+                    let imageData = try Data(contentsOf: fileUrl)
                     
                     if let image = UIImage(data: imageData) {
-                        userImages.append(image)
+                        let newImage = ImageFile.init(image: image, imageName: fileUrl.lastPathComponent, imageSize: fileSize ?? 0, imageCreationDate: creationDate ?? Date())
+                        
+                        userImages.append(newImage)
+                        self.getSortedImages(isToggleOn: isToggleOn)
                     }
                 } catch let error as NSError {
                     print("Error is: \(error.localizedDescription)")
@@ -45,26 +68,69 @@ class DocsViewModel: DocsViewModelOutputProtocol {
         }
     }
     
-    func saveImageToDocuments(chosenImage: UIImage) {
+    func saveImageToDocuments(chosenImage: UIImage, isToggleOn: Bool) {
         let data = chosenImage.jpegData(compressionQuality: .zero)
         
         if let unwrappedDocumentsUrl = documentsUrl {
             let fileUrl = unwrappedDocumentsUrl.appendingPathComponent(String.random())
             FileManager.default.createFile(atPath: fileUrl.path, contents: data, attributes: nil)
             
-            userImages.append(chosenImage)
+            var fileSize: Int?
+            var creationDate: Date?
+            
+            if FileManager.default.fileExists(atPath: fileUrl.path) {
+                do {
+                    let attributes = try FileManager.default.attributesOfItem(atPath: fileUrl.path)
+                    fileSize = attributes[.size] as? Int
+                    creationDate = attributes[.creationDate] as? Date
+                } catch let error as NSError {
+                    print("Error is: \(error.localizedDescription)")
+                }
+            }
+            do {
+                let imageData = try Data(contentsOf: fileUrl)
+                
+                if let image = UIImage(data: imageData) {
+                    let newImage = ImageFile.init(image: image, imageName: fileUrl.lastPathComponent, imageSize: fileSize ?? 0, imageCreationDate: creationDate ?? Date())
+                    
+                    userImages.append(newImage)
+                    self.getSortedImages(isToggleOn: isToggleOn)
+                }
+            } catch let error as NSError {
+                print("Error is: \(error.localizedDescription)")
+            }
         }
     }
-}
-
-extension String {
-    static func random(length: Int = 20) -> String {
-        let base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        var randomString: String = ""
-        for _ in 0..<length {
-            let randomValue = arc4random_uniform(UInt32(base.count))
-            randomString += "\(base[base.index(base.startIndex, offsetBy: Int(randomValue))])"
+    
+    func deleteImageFromDocuments(removableImage: ImageFile, index: Int) {
+        if let unwrappedDocumentsUrl = documentsUrl {
+            
+            if content != nil {
+                let fileUrl = unwrappedDocumentsUrl.appendingPathComponent(removableImage.imageName)
+                
+                if FileManager.default.fileExists(atPath: fileUrl.path) {
+                    do {
+                        try FileManager.default.removeItem(at: fileUrl)
+                        print("Image \(removableImage.imageName) has been deleted!")
+                    } catch let error as NSError {
+                        print("Error is: \(error.localizedDescription)")
+                    }
+                }
+                sortedImages.remove(at: index)
+                userImages = sortedImages
+            }
         }
-        return randomString
+    }
+    
+    func getSortedImages(isToggleOn: Bool) {
+        if isToggleOn {
+            sortedImages = userImages.sorted {
+                $0.imageName < $1.imageName
+            }
+        } else {
+            sortedImages = userImages.sorted {
+                $0.imageName > $1.imageName
+            }
+        }
     }
 }
